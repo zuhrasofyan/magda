@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders custom url icon 1`] = `
+<img
+  alt={undefined}
+  className={undefined}
+  src="http://lorempixel.com/400/200/"
+/>
+`;
+
+exports[`renders default icon 1`] = `
+<img
+  alt={undefined}
+  className={undefined}
+  src="/assets/file-icons/Default.png"
+/>
+`;
+
+exports[`renders jpeg icon 1`] = `
+<img
+  alt="JPG"
+  className="test"
+  src="/assets/file-icons/Default.png"
+/>
+`;
