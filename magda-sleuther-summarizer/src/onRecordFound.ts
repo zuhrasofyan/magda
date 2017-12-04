@@ -9,6 +9,7 @@ import summarizeAspectDef, {
 import VALID_FORMATS from "./validFormats"
 //created a separate summary API.js file because make a .d.ts will be much easier with 1 file instead of a whole node-summary repo.
 import {getSummaryFromURL} from "./summaryAPI"
+import unionToThrowable from "@magda/typescript-common/src/util/unionToThrowable";
 /*declare function getSummaryFromContent(title: string, content: string): {
     err: any,
     summary: string
@@ -36,21 +37,26 @@ export default async function onRecordFound(
             )
     );
 
-    const summarizeAspectPromise = Promise.all( 
-        linkChecks.map(linkCheck => {
-            linkCheck.op().then(result => {
-                return recordSummaryAspect(registry, result)
-            }).catch(err => {
-                console.log("an error occured in the op method inside checkDistributionFormat: " + err);
-            });
-        })
-    );
+    // gathering all the sleuthering results so that we can put them all into the database at once
+    let recordSummaries: SummarizeSleuthingResult[];
+    linkChecks.map(linkCheck => {
+        linkCheck.op().then(result => {
+            recordSummaries.push(result);
+        }).catch(err => {
+            console.log("an error occured in the op method inside checkDistributionFormat: " + err);
+        });
+    });
 
-    return summarizeAspectPromise; //Promise.all([summarizeAspectPromise]);
+    // put sleuthering results into the database, and store their promises so we can return them in this function
+    const recordSummaryPromise: Promise<Record[]> = Promise.all(recordSummaries.map(recordSummary => {
+        return recordSummaryAspect(registry, recordSummary);
+    }));
+
+    await Promise.all([recordSummaryPromise]); //Promise.all([summarizeAspectPromise]);
 }
 
-function recordSummaryAspect(registry: Registry, result: SummarizeSleuthingResult) {
-    registry.putRecordAspect(result.distribution.id, summarizeAspectDef.id, result.aspect);
+function recordSummaryAspect(registry: Registry, result: SummarizeSleuthingResult): Promise<Record> {
+    return registry.putRecordAspect(result.distribution.id, summarizeAspectDef.id, result.aspect).then(unionToThrowable);
 }
 
 type DistributionSummary = {
@@ -86,7 +92,7 @@ function checkDistributionFormat(
     // returning: A promise. Fulfilled state: returns a summary, reject state: returns the reason why a summary wont work.
     // summary = "" if a promise is of a rejected format. 
     return urls.map(url => {
-        return {
+        return  {
             op: () =>
                 retrieveSummary(url.url)
                     .then(aspect => ({
@@ -103,13 +109,13 @@ function checkDistributionFormat(
                         },
                         urlType: url.type
                     })) as Promise<SummarizeSleuthingResult>
-            };
+                }
     });
 }
 
 interface SummarizeSleuthingResult {
     distribution: Record;
-    aspect?: SummarizeAspect;
+    aspect?: Summarizespect;
     urlType: "downloadURL" | "accessURL";
 }
 
