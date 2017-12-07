@@ -69,6 +69,8 @@ type DistributionSummary = {
  * @param distStringsAspect The dcat-distributions-strings aspect for this distribution
  */
 
+ //@private
+
 function checkDistributionFormat(
     distribution: Record,
     distStringsAspect: any
@@ -115,16 +117,19 @@ function checkDistributionFormat(
 
 interface SummarizeSleuthingResult {
     distribution: Record;
-    aspect?: Summarizespect;
+    aspect?: SummarizeAspect;
     urlType: "downloadURL" | "accessURL";
 }
 
-function retrieveSummary(url: string): Promise<SummarizeAspect> {
+// nextime, add a promise to containsValidExtension, so that we can separate the 
+//errors in containsValidExtensions from the errors in retrieveSummary.
+// @ private
+export function retrieveSummary(url: string): Promise<SummarizeAspect> {
     const promise = new Promise<SummarizeAspect>((resolve, reject) => {
         if(containsValidExtensions(url)) {
             let info = getSummaryFromURL(url);
             if(info.err) {
-                reject(info.err);
+                reject("error with SummaryAPI:\n"+info.err);
             } else {
                 resolve({
                     status: "isValid",
@@ -141,7 +146,8 @@ function retrieveSummary(url: string): Promise<SummarizeAspect> {
 
 // helper functions
 // .*\.(txt|pdf)
-function getRegexFromFormats(formats: string[]): string {
+//@ private
+export function getRegexFromFormats(formats: string[]): string {
     let regexArr = formats.map(str => {
         str = str.substr(1, str.length - 1) + "|";
     });
@@ -158,9 +164,7 @@ function getRegexFromFormats(formats: string[]): string {
 
     return array.map(checkValidity)
 }*/
-
-function containsValidExtensions(str: string): boolean {
+//@ private
+export function containsValidExtensions(str: string): boolean {
     return str.match(getRegexFromFormats(VALID_FORMATS)) != null;
 }
-
-
