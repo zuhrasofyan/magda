@@ -2,8 +2,8 @@
     "type": "magda-ckan-connector",
     "id": "dga",
     "name": "data.gov.au",
-    "sourceUrl": "https://data.gov.au/",
+    "sourceUrl": "https://uat.dga.links.com.au/",
     "pageSize": 1000,
-    "schedule": "0 4 */3 * *",
+    "schedule": "0 */2 * * *",
     "ignoreHarvestSources": ["*"]
 }
