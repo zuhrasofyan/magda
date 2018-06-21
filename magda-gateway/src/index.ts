@@ -158,6 +158,11 @@ app.use(
 );
 app.use("/preview-map", createGenericProxy(argv.previewMap));
 
+// temporary hacky redirect
+app.all("/api/3", (req, res) => {
+    res.redirect("https://uat.dga.links.com.au" + req.url);
+});
+
 // Proxy any other URL to magda-web
 app.use("/", createGenericProxy(argv.web));
 
