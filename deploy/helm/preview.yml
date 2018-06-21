@@ -32,14 +32,14 @@ combined-db:
       memory: 1500Mi
     limits:
       cpu: 1500m
-  waleBackup:
-    method: WAL
-    readOnly: "TRUE"
-    recoveryMode: "immediate"
-    gsPrefix: "gs://magda-postgres-backups-asia/dev"
-    googleApplicationCreds:
-      secretName: storage-account-credentials
-      fileName: db-service-account-private-key.json
+  # waleBackup:
+  #   method: WAL
+  #   readOnly: "TRUE"
+  #   recoveryMode: "immediate"
+  #   gsPrefix: "gs://magda-postgres-backups-asia/dev"
+  #   googleApplicationCreds:
+  #     secretName: storage-account-credentials
+  #     fileName: db-service-account-private-key.json
   data:
     storage: 250Gi
 elasticsearch:
