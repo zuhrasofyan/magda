@@ -63,6 +63,46 @@ export class MockRegistry extends MockExpressServer {
             res.json(req.body);
         });
 
+        registry.put("/records/:id/aspects/:aspect", (req: any, res: any) => {
+            const { id, aspect } = req.params;
+            const aspectBody = req.body;
+            this.records[id] = this.records[req.params.id] || {
+                id,
+                aspects: {}
+            };
+            this.records[id].aspects[aspect] = aspectBody;
+
+            // validate aspect
+            try {
+                let invalid = this.env.validate(`${aspect}#`, aspectBody);
+                if (invalid) {
+                    return res
+                        .status(500)
+                        .json({
+                            aspect,
+                            aspectBody,
+                            schema: this.aspects[aspect].jsonSchema,
+                            invalid
+                        })
+                        .end();
+                }
+            } catch (e) {
+                // https://github.com/korzio/djv/issues/71
+                // return res
+                //     .status(500)
+                //     .json({
+                //         aspect,
+                //         aspectBody,
+                //         schema: this.aspects[aspect].jsonSchema,
+                //         error: e.message
+                //     })
+                //     .end();
+                console.log(e.message);
+            }
+
+            res.json(req.body);
+        });
+
         registry.delete("/records", (req: any, res: any) => {
             let count = 0;
             for (const [recordId, record] of Object.entries(this.records)) {
