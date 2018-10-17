@@ -9,6 +9,10 @@ global:
 tags:
   all: true
   ingress: true
+  minion-broken-link: true
+  minion-linked-data-rating: true
+  minion-visualization: true
+  minion-format: true
 
 ingress:
   ingressClass: nginx
@@ -104,7 +108,7 @@ connectors:
 
   ## Whether to run recurring jobs on the schedule specified per connector.
   includeCronJobs: true
-  
+
   config:
     - image:
       name: magda-ckan-connector
